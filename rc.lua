@@ -116,17 +116,17 @@ awful.layout.set(awful.layout.suit.max, tags[1][4])
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-   { "Restart", function() awful.util.spawn(upower.."Restart") end },
-   { "Suspend", function() awful.util.spawn(upower.."Suspend") end },
-   { "Hibernate", function () awful.util.spawn(upower.."Hibernate") end },
-   --{ "manual", terminal .. " -e man awesome" },
+   { "Restart", function() awful.util.spawn("sudo shutdown -r now") end },
+   { "Shutdown", function() awful.util.spawn("sudo shutdown -h now") end },
+   { "Suspend", function() awful.util.spawn("sudo pm-suspend") end },
+   { "Hibernate", function () awful.util.spawn("pm-hibernate") end },
    { "Reload", awesome.restart },
-   { "Logout", awesome.quit },
-   { "Edit Config", editor_cmd .. " " .. awesome.conffile }
+   { "Logout", awesome.quit }
 }
 
-mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "open terminal", terminal }
+mymainmenu = awful.menu({ items = { { "Power", myawesomemenu, beautiful.awesome_icon },
+                                    { "Terminal", terminal },
+									{ "Edit Config", editor_cmd .. " " .. awesome.conffile }
                                   }
                         })
 
