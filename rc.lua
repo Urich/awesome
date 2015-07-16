@@ -97,6 +97,10 @@ if beautiful.wallpaper then
         gears.wallpaper.maximized(beautiful.wallpaper, s, true)
     end
 end
+
+local mywallpaper = os.getenv("HOME") .. "/.config/awesome/urich/wallpaper/seychell1.jpg"
+gears.wallpaper.maximized(mywallpaper, 1, true)
+--gears.wallpaper.maximized(mywallpaper, 2, true)
 -- }}}
 
 -- {{{ Tags
@@ -144,7 +148,7 @@ mytextclock = awful.widget.textclock()
 -- Виджет переключения клавиатуры
 kbdcfg = {}
 kbdcfg.cmd = "setxkbmap"
-kbdcfg.pathimage = "/home/urich/.config/awesome/urich/icon/"
+kbdcfg.pathimage = os.getenv("HOME") .. "/.config/awesome/urich/icon/"
 kbdcfg.layout = { { "us", "" }, { "ru", "" } }
 kbdcfg.current = 1  -- de is our default layout
 --kbdcfg.widget = wibox.widget.textbox()
@@ -430,11 +434,30 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
+--	{ rule = { class = "Plugin-container" },
+--	  properties = { floating = true, width = 1900, height = 1024 } },
+	{ rule = { class = "Firefox" },
+      properties = { tag = tags[1][4] } },
+	{ rule = { class = "Skype" },
+      properties = { tag = tags[1][1] } },
+	{ rule = { class = "pidgin" },
+      properties = { tag = tags[1][1] } }
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
 }
 -- }}}
+
+mytimer=timer{timeout=2}
+mytimer:connect_signal("timeout",
+    function () for i,c in ipairs(client.get(mouse.screen)) do
+        if c:tags()[mouse.screen] == awful.tag.selected(mouse.screen) then
+            naughty.notify({title=c.class,text=c.role})
+            naughty.notify({title=c.class,text=c.instance})
+        end
+    end
+end)
+--mytimer:start()
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -508,3 +531,36 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+--
+
+function dpms(c)
+    if c then
+        awful.util.spawn_with_shell("xset s off")
+		awful.util.spawn_with_shell("xset -dpms")
+		msgDebug("true")
+    else
+        awful.util.spawn_with_shell("xset s on && xset +dpms &")
+		msgDebug("false")
+    end
+end
+
+function run_once(cmd)
+  findme = cmd
+  firstspace = cmd:find(" ")
+  if firstspace then
+    findme = cmd:sub(0, firstspace-1)
+  end
+  awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+end
+
+function run_start()
+	dpms(true)
+end
+
+run_start();
+run_once("dropbox");
+run_once("conky");
+run_once("pidgin");
+run_once("skype");
+
+
