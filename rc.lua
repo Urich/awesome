@@ -434,11 +434,30 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
+--	{ rule = { class = "Plugin-container" },
+--	  properties = { floating = true, width = 1900, height = 1024 } },
+	{ rule = { class = "Firefox" },
+      properties = { tag = tags[1][4] } },
+	{ rule = { class = "Skype" },
+      properties = { tag = tags[1][1] } },
+	{ rule = { class = "pidgin" },
+      properties = { tag = tags[1][1] } }
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
 }
 -- }}}
+
+mytimer=timer{timeout=2}
+mytimer:connect_signal("timeout",
+    function () for i,c in ipairs(client.get(mouse.screen)) do
+        if c:tags()[mouse.screen] == awful.tag.selected(mouse.screen) then
+            naughty.notify({title=c.class,text=c.role})
+            naughty.notify({title=c.class,text=c.instance})
+        end
+    end
+end)
+--mytimer:start()
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -516,7 +535,8 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 function dpms(c)
     if c then
-        awful.util.spawn_with_shell("xset s off && xset -dpms &")
+        awful.util.spawn_with_shell("xset s off")
+		awful.util.spawn_with_shell("xset -dpms")
 		msgDebug("true")
     else
         awful.util.spawn_with_shell("xset s on && xset +dpms &")
@@ -534,7 +554,7 @@ function run_once(cmd)
 end
 
 function run_start()
-	dpms(false)
+	dpms(true)
 end
 
 run_start();
