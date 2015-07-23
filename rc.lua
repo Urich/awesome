@@ -12,6 +12,7 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local vicious = require("vicious")
 local lain = require("lain")
+local alttab = require("alttab")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -98,8 +99,8 @@ if beautiful.wallpaper then
     end
 end
 
-local mywallpaper = os.getenv("HOME") .. "/.config/awesome/urich/wallpaper/seychell1.jpg"
-gears.wallpaper.maximized(mywallpaper, 1, true)
+--local mywallpaper = os.getenv("HOME") .. "/.config/awesome/urich/wallpaper/seychell1.jpg"
+--gears.wallpaper.maximized(mywallpaper, 1, true)
 --gears.wallpaper.maximized(mywallpaper, 2, true)
 -- }}}
 
@@ -163,7 +164,7 @@ kbdcfg.switch = function ()
   --kbdcfg.widget:set_text(" " .. t[1] .. " ")
   kbdcfg.widget:set_image(kbdcfg.pathimage .. t[1] .. ".png")
   os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
-  --msgDebug( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
+--  msgDebug( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
 end
 
  -- Mouse bindings
@@ -171,6 +172,42 @@ kbdcfg.widget:buttons(
  awful.util.table.join(awful.button({ }, 1, function () kbdcfg.switch() end))
 )
 
+local function outputs()
+	local outputs = {}
+	local xrandr = io.popen("xrandr -q")
+	if xrandr then
+		for line in xrandr:lines() do
+			output = line:match("^([%w-]+) connected ")
+			if output then
+				outputs[#outputs + 1] = output
+			end
+		end
+		xrandr:close()
+	end
+	return outputs
+end
+
+xrandr = { }
+xrandr.menu = awful.menu()
+xrandr.widget = wibox.widget.textbox()
+xrandr.widget:set_text(" Screen ")
+xrandr.init = function()
+	local out = outputs()
+	local mode = {"1024x768", "1400x1050", "1600x1200", "1920x1080"}
+	for _, o in pairs(out) do
+		for _, m in pairs(mode) do		
+			xrandr.menu:add({ o .. " " .. m,
+			function()
+			--	msgDebug(o .. " " .. m)
+				awful.util.spawn("xrandr --output " .. o .. " --mode " .. m)
+			end }, #xrandr.menu+1);
+		end
+	end
+end
+xrandr.show = function() xrandr.menu:toggle() end
+
+xrandr.widget:buttons(awful.util.table.join(awful.button({ }, 1, function () xrandr.show() end)))
+xrandr:init()
 
 -- Инициализация виджета
 datewidget = wibox.widget.textbox()
@@ -258,6 +295,7 @@ for s = 1, screen.count() do
     --local right_layout = wibox.layout.align.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
 --    right_layout:add(mytextclock)
+    right_layout:add(xrandr.widget)
     right_layout:add(kbdcfg.widget)
     right_layout:add(datewidget)
     right_layout:add(mylayoutbox[s])
@@ -339,7 +377,25 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey }, "p", function() menubar.show() end),
+
+	awful.key({ "Mod1" }, "Tab",
+       function ()
+          alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab")
+       end),
+	awful.key({ "Mod1", "Shift"  }, "Tab",
+       function ()
+          alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab")
+       end),
+    awful.key({ "Mod1", "Alt_R" }, "Shift_R", function () kbdcfg.switch() end),
+    awful.key({ "Mod1", "Alt_L" }, "Shift_L", function () kbdcfg.switch() end)
+--	awful.key({ "Mod1", }, "Tab",
+--        function ()
+--            awful.client.focus.history.previous()
+--            if client.focus then
+--                client.focus:raise()
+--            end
+--        end)
 )
 
 clientkeys = awful.util.table.join(
@@ -359,8 +415,8 @@ clientkeys = awful.util.table.join(
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
-        end),
-    awful.key({ modkey }, "Shift_R", function () kbdcfg.switch() end)
+        end)
+--    awful.key({ "Alt" }, "Shift", function () kbdcfg.switch() end)
 )
 
 -- Bind all key numbers to tags.
@@ -428,10 +484,6 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
-      properties = { floating = true } },
-    { rule = { class = "pinentry" },
-      properties = { floating = true } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
 --	{ rule = { class = "Plugin-container" },
@@ -440,8 +492,14 @@ awful.rules.rules = {
       properties = { tag = tags[1][4] } },
 	{ rule = { class = "Skype" },
       properties = { tag = tags[1][1] } },
+	{ rule = { class = "Steam" },
+      properties = { tag = tags[1][4] } },
 	{ rule = { class = "pidgin" },
-      properties = { tag = tags[1][1] } }
+      properties = { tag = tags[1][1] } },
+--    { rule = { instance = "plugin-container" },
+--      properties = { floating = true } },
+	{ rule = { class = "Clementine" },
+      properties = { tag = tags[1][4] } },
     -- Set Firefox to always map on tags number 2 of screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { tag = tags[1][2] } },
@@ -458,6 +516,18 @@ mytimer:connect_signal("timeout",
     end
 end)
 --mytimer:start()
+--
+client.connect_signal("focus", function(c)
+ if  c.name == "plugin-container" then
+ 	--msgDebug(c.name)
+	c.fullscreen = true
+    --flash_client = c
+    --mt = timer({timeout=0.1})
+    --mt:connect_signal("timeout",function() flash_client.fullscreen = true
+    --mt:stop() end)
+    --mt:start()      
+ end
+end)
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -537,10 +607,10 @@ function dpms(c)
     if c then
         awful.util.spawn_with_shell("xset s off")
 		awful.util.spawn_with_shell("xset -dpms")
-		msgDebug("true")
+--		msgDebug("true")
     else
         awful.util.spawn_with_shell("xset s on && xset +dpms &")
-		msgDebug("false")
+--		msgDebug("false")
     end
 end
 

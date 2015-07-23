@@ -1,2 +1,3 @@
 git clone http://git.sysphere.org/vicious
 git clone https://github.com/copycat-killer/lain.git ~/.config/awesome/lain
+git clone https://github.com/jorenheit/awesome_alttab ~/.config/awesome/alttab
