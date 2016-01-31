@@ -133,6 +133,8 @@ key_F1                   = "#67"
 key_Mute               = "#121"
 key_Vol_Down     = "#122"
 key_Vol_Up          = "#123"
+mouse_left			= 1
+mouse_right			= 3
 
 -- {{{ Wallpaper
 if beautiful.wallpaper then
@@ -190,28 +192,51 @@ mytextclock = awful.widget.textclock()
 
 -- Виджет переключения клавиатуры
 kbdcfg = {}
-kbdcfg.cmd = "setxkbmap -layout"
+kbdcfg.cmd = "xkblayout-state print %n"
 kbdcfg.pathimage = os.getenv("HOME") .. "/.config/awesome/urich/icon/"
 kbdcfg.layout = { { "us", "" }, { "ru", "" } }
-kbdcfg.current = 1  -- de is our default layout
+--kbdcfg.current = 1  -- de is our default layout
 --kbdcfg.widget = wibox.widget.textbox()
 kbdcfg.widget = wibox.widget.imagebox()
 --kbdcfg.widget:set_text(" " .. kbdcfg.layout[kbdcfg.current][1] .. " ")
-kbdcfg.widget:set_image(kbdcfg.pathimage .. kbdcfg.layout[kbdcfg.current][1] .. ".png")
+kbdcfg.widget:set_image(kbdcfg.pathimage .. kbdcfg.layout[1][1] .. ".png")
 kbdcfg.widget.bg_align = "center"
 kbdcfg.widget.bg_resize = true
 kbdcfg.switch = function ()
-  kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
-  local t = kbdcfg.layout[kbdcfg.current]
+ -- kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
+ -- local t = kbdcfg.layout[kbdcfg.current]
   --kbdcfg.widget:set_text(" " .. t[1] .. " ")
-  kbdcfg.widget:set_image(kbdcfg.pathimage .. t[1] .. ".png")
-  os.execute( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
-  --msgDebug( kbdcfg.cmd .. " " .. t[1] .. " " .. t[2] )
+ -- kbdcfg.widget:set_image(kbdcfg.pathimage .. t[1] .. ".png")
+	local handle = io.popen(kbdcfg.cmd)
+	local lang = handle:read("*a")
+	handle:close()
+	if "Russian" == lang then
+ 		kbdcfg.widget:set_image( kbdcfg.pathimage .. kbdcfg.layout[2][1] .. ".png" )
+  --		msgDebug(  kbdcfg.pathimage .. kbdcfg.layout[2][1] .. ".png")
+	end
+	if "English" == lang then
+ 		kbdcfg.widget:set_image( kbdcfg.pathimage .. kbdcfg.layout[1][1] .. ".png" )
+--		msgDebug( kbdcfg.pathimage .. kbdcfg.layout[1][1] .. ".png" )
+	end
 end
-
+kbdcfg.switch_click = function ()
+	local handle = io.popen(kbdcfg.cmd)
+	local lang = handle:read("*a")
+	handle:close()
+  	msgDebug( kbdcfg.pathimage .. kbdcfg.layout[2][1] .. ".png")
+	if "Russian" == lang then
+ 		kbdcfg.widget:set_image( kbdcfg.pathimage .. kbdcfg.layout[1][1] .. ".png" )
+  --		msgDebug(  kbdcfg.pathimage .. kbdcfg.layout[2][1] .. ".png")
+	end
+	if "English" == lang then
+ 		kbdcfg.widget:set_image( kbdcfg.pathimage .. kbdcfg.layout[2][1] .. ".png" )
+--		msgDebug( kbdcfg.pathimage .. kbdcfg.layout[1][1] .. ".png" )
+	end
+end
  -- Mouse bindings
 kbdcfg.widget:buttons(
- awful.util.table.join(awful.button({ }, 1, function () kbdcfg.switch() end))
+ awful.util.table.join(awful.button({}, 1, function () kbdcfg.switch_click() end))
+ --awful.util.table.join(awful.key({ }, "#110", function () kbdcfg.switch_click() end))
 )
 
 local function outputs()
@@ -370,9 +395,9 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ modkey,           }, key_Left,   awful.tag.viewprev       ),
+    awful.key({ modkey,           }, key_Right,  awful.tag.viewnext       ),
+    awful.key({ modkey,           }, key_Escape, awful.tag.history.restore),
 
     awful.key({ modkey,           }, key_J,
         function ()
@@ -392,7 +417,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, key_J, function () awful.screen.focus_relative( 1) end),
     awful.key({ modkey, "Control" }, key_K, function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, key_U, awful.client.urgent.jumpto),
-    awful.key({ modkey,           }, "Tab",
+    awful.key({ modkey,           }, key_Tab,
         function ()
             awful.client.focus.history.previous()
             if client.focus then
@@ -401,7 +426,7 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey,           }, key_Return, function () awful.util.spawn(terminal) end),
     awful.key({ modkey, "Control" }, key_R, awesome.restart),
     awful.key({ modkey, "Shift"   }, key_Q, awesome.quit),
 
@@ -452,7 +477,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, key_F,      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, key_C,      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, key_Space,  awful.client.floating.toggle                     ),
-    awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
+    awful.key({ modkey, "Control" }, key_Return, function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, key_O,      awful.client.movetoscreen                        ),
     awful.key({ modkey,           }, key_T,      function (c) c.ontop = not c.ontop            end),
     awful.key({ modkey,           }, key_N,
