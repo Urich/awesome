@@ -124,7 +124,7 @@ myawesomemenu = {
    { "Restart", function() awful.util.spawn("sudo shutdown -r now") end },
    { "Shutdown", function() awful.util.spawn("sudo shutdown -h now") end },
    { "Suspend", function() awful.util.spawn("sudo pm-suspend") end },
-   { "Hibernate", function () awful.util.spawn("pm-hibernate") end },
+   { "Hibernate", function () awful.util.spawn("sudo pm-hibernate") end },
    { "Reload", awesome.restart },
    { "Logout", awesome.quit }
 }
