@@ -13,6 +13,8 @@ local menubar = require("menubar")
 local vicious = require("vicious")
 local lain = require("lain")
 local alttab = require("alttab")
+local blingbling = require('blingbling')
+
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -99,8 +101,8 @@ if beautiful.wallpaper then
     end
 end
 
---local mywallpaper = os.getenv("HOME") .. "/.config/awesome/urich/wallpaper/seychell1.jpg"
---gears.wallpaper.maximized(mywallpaper, 1, true)
+local mywallpaper = os.getenv("HOME") .. "/.config/awesome/urich/wallpaper/404.jpg"
+gears.wallpaper.maximized(mywallpaper, 1, true)
 --gears.wallpaper.maximized(mywallpaper, 2, true)
 -- }}}
 
@@ -210,9 +212,16 @@ xrandr.widget:buttons(awful.util.table.join(awful.button({ }, 1, function () xra
 xrandr:init()
 
 -- Инициализация виджета
-datewidget = wibox.widget.textbox()
+--datewidget = wibox.widget.textbox()
 -- Регистрация
-vicious.register(datewidget, vicious.widgets.date, "%b %d, %R", 60)
+--vicious.register(datewidget, vicious.widgets.date, "%b %d, %R", 60)
+--local calendar = blingbling.calendar(datawidget)
+
+calendar = blingbling.calendar.new({type = "imagebox", image = beautiful.calendar_icon})
+--calendar:set_cell_padding(4)
+--calendar:set_columns_lines_titles_text_color(beautiful.text_font_color_2)
+--calendar:set_title_text_color(beautiful.bg_focus)
+--calendar:set_link_to_external_calendar(true)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -297,7 +306,8 @@ for s = 1, screen.count() do
 --    right_layout:add(mytextclock)
     right_layout:add(xrandr.widget)
     right_layout:add(kbdcfg.widget)
-    right_layout:add(datewidget)
+--    right_layout:add(datewidget)
+    right_layout:add(calendar)
     right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
