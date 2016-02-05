@@ -195,7 +195,7 @@ xrandr.widget = wibox.widget.textbox()
 xrandr.widget:set_text(" Screen ")
 xrandr.init = function()
 	local out = outputs()
-	local mode = {"1024x768", "1400x1050", "1600x1200", "1920x1080"}
+	local mode = {"1024x768", "1440x900", "1400x1050", "1600x1200", "1920x1080"}
 	for _, o in pairs(out) do
 		for _, m in pairs(mode) do		
 			xrandr.menu:add({ o .. " " .. m,
