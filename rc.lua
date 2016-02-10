@@ -51,7 +51,8 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+-- beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/urich/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "terminator"
@@ -345,7 +346,7 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
 --    right_layout:add(mytextclock)
     right_layout:add(xrandr.widget)
-    right_layout:add(kbdcfg.widget)
+--    right_layout:add(kbdcfg.widget)
 --    right_layout:add(datewidget)
     right_layout:add(calendar)
     right_layout:add(mylayoutbox[s])
@@ -436,9 +437,9 @@ globalkeys = awful.util.table.join(
 	awful.key({ "Mod1", "Shift"  }, "Tab",
        function ()
           alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab")
-       end),
-    awful.key({ "Mod1", "Alt_R" }, "Shift_R", function () kbdcfg.switch() end),
-    awful.key({ "Mod1", "Alt_L" }, "Shift_L", function () kbdcfg.switch() end)
+       end)
+--    awful.key({ "Mod1", "Alt_R" }, "Shift_R", function () kbdcfg.switch() end),
+--    awful.key({ "Mod1", "Alt_L" }, "Shift_L", function () kbdcfg.switch() end)
 --	awful.key({ "Mod1", }, "Tab",
 --        function ()
 --            awful.client.focus.history.previous()
@@ -682,5 +683,6 @@ run_once("dropbox");
 run_once("conky");
 run_once("pidgin");
 run_once("skype");
+run_once("xxkb");
 
 
