@@ -9,7 +9,7 @@
 
 theme                               = {}
 
-theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
+theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/urich/themes/multicolor"
 theme.wallpaper                     = theme.confdir .. "/wall.png"
 
 theme.font                          = "Terminus 8"
