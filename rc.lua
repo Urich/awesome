@@ -318,6 +318,7 @@ calendar = blingbling.calendar.new({type = "imagebox", image = beautiful.calenda
 
 -- Create a wibox for each screen and add it
 mywibox = {}
+mywiboxbottom = {}
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -385,6 +386,7 @@ for s = 1, screen.count() do
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
+    mywiboxbottom[s] = awful.wibox({ position = "bottom", screen = s })
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
@@ -406,10 +408,14 @@ for s = 1, screen.count() do
     -- Now bring it all together (with the tasklist in the middle)
     local layout = wibox.layout.align.horizontal()
     layout:set_left(left_layout)
-    layout:set_middle(mytasklist[s])
+--    layout:set_middle(mytasklist[s])
     layout:set_right(right_layout)
 
     mywibox[s]:set_widget(layout)
+
+    local layoutbottom = wibox.layout.align.horizontal()
+    layoutbottom:set_left(mytasklist[s])
+    mywiboxbottom[s]:set_widget(layoutbottom)
 end
 -- }}}
 
