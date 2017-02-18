@@ -9,9 +9,9 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local vicious = require("vicious")
-local lain = require("lain")
+--local lain = require("lain")
 local alttab = require("alttab")
-local blingbling = require('blingbling')
+--local blingbling = require('blingbling')
 local os = require('os')
 local autofocus = require("awful.autofocus")
 awful.rules = require("awful.rules")
@@ -70,8 +70,8 @@ modkey = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
-	lain.layout.termfair,
-    lain.layout.uselesstile,
+--	lain.layout.termfair,
+--    lain.layout.uselesstile,
 --    lain.layout.centerwork,
 --    awful.layout.suit.floating,
 --    awful.layout.suit.tile,
@@ -87,13 +87,13 @@ local layouts =
 --    awful.layout.suit.magnifier
 }
 
-lain.layout.termfair.nmaster = 3
-lain.layout.termfair.ncol = 1
-
-lain.layout.centerwork.top_left = 0
-lain.layout.centerwork.top_right = 1
-lain.layout.centerwork.bottom_left = 2
-lain.layout.centerwork.bottom_right = 3
+--lain.layout.termfair.nmaster = 3
+--lain.layout.termfair.ncol = 1
+--
+--lain.layout.centerwork.top_left = 0
+--lain.layout.centerwork.top_right = 1
+--lain.layout.centerwork.bottom_left = 2
+--lain.layout.centerwork.bottom_right = 3
 
 theme.useless_gap_width = "5"
 -- }}}
@@ -160,7 +160,7 @@ end
 
 awful.layout.set(awful.layout.suit.fair, tags[1][1])
 awful.layout.set(awful.layout.suit.max, tags[1][2])
-awful.layout.set(lain.layout.uselesstile, tags[1][3])
+--awful.layout.set(lain.layout.uselesstile, tags[1][3])
 awful.layout.set(awful.layout.suit.max, tags[1][4])
 -- }}}
 
@@ -310,7 +310,7 @@ xrandr:init()
 --vicious.register(datewidget, vicious.widgets.date, "%b %d, %R", 60)
 --local calendar = blingbling.calendar(datawidget)
 
-calendar = blingbling.calendar.new({type = "imagebox", image = beautiful.calendar_icon})
+--calendar = blingbling.calendar.new({type = "imagebox", image = beautiful.calendar_icon})
 --calendar:set_cell_padding(4)
 --calendar:set_columns_lines_titles_text_color(beautiful.text_font_color_2)
 --calendar:set_title_text_color(beautiful.bg_focus)
@@ -385,8 +385,8 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
-    mywiboxbottom[s] = awful.wibox({ position = "bottom", screen = s })
+    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
+    mywiboxbottom[s] = awful.wibox({ position = "bottom", screen = s, height = 25 })
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
@@ -402,7 +402,7 @@ for s = 1, screen.count() do
     right_layout:add(xrandr.widget)
 --    right_layout:add(kbdcfg.widget)
 --    right_layout:add(datewidget)
-    right_layout:add(calendar)
+--    right_layout:add(calendar)
     right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -476,7 +476,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, key_N, awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey },            key_R,     function () mypromptbox[mouse.screen]:run() end),
+    -- awful.key({ modkey },            key_R,     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey },            key_R,     function () awful.screen.focused().mypromptbox:run() end),
 
     awful.key({ modkey }, key_X,
               function ()
@@ -495,7 +496,13 @@ globalkeys = awful.util.table.join(
 	awful.key({ "Mod1", "Shift"  }, "Tab",
        function ()
           alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab")
-       end)
+       end),
+	awful.key({ modkey, "Control" }, key_T,
+	   function ()
+	       -- toggle titlebar
+		  msgDebug("test")
+		  -- awful.titlebar.toggle()
+	   end)
 --    awful.key({ "Mod1", "Alt_R" }, "Shift_R", function () kbdcfg.switch() end),
 --    awful.key({ "Mod1", "Alt_L" }, "Shift_L", function () kbdcfg.switch() end)
 --	awful.key({ "Mod1", }, "Tab",
@@ -595,48 +602,46 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule = { class = "gimp" },
       properties = { floating = true } },
---	{ rule = { class = "Plugin-container" },
---	  properties = { floating = true, width = 1900, height = 1024 } },
 	{ rule = { class = "Firefox" },
       properties = { tag = tags[1][4] } },
-	{ rule = { class = "Skype" },
+	{ rule = { class = "skype" },
       properties = { tag = tags[1][1] } },
 	{ rule = { class = "Steam" },
       properties = { tag = tags[1][4] } },
 	{ rule = { class = "pidgin" },
       properties = { tag = tags[1][1] } },
---    { rule = { instance = "plugin-container" },
---      properties = { floating = true } },
 	{ rule = { class = "Clementine" },
       properties = { tag = tags[1][4] } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
+    { rule =
+		{ class = "google-chrome" },
+      	properties = { tag = tags[1][4] } },
+    { rule = { class = "digikam" },
+      	properties = { tag = tags[1][4] } }
 }
 -- }}}
 
-mytimer=timer{timeout=2}
-mytimer:connect_signal("timeout",
-    function () for i,c in ipairs(client.get(mouse.screen)) do
-        if c:tags()[mouse.screen] == awful.tag.selected(mouse.screen) then
-            naughty.notify({title=c.class,text=c.role})
-            naughty.notify({title=c.class,text=c.instance})
-        end
-    end
-end)
---mytimer:start()
---
-client.connect_signal("focus", function(c)
- if  c.name == "plugin-container" then
- 	--msgDebug(c.name)
-	c.fullscreen = true
-    --flash_client = c
-    --mt = timer({timeout=0.1})
-    --mt:connect_signal("timeout",function() flash_client.fullscreen = true
-    --mt:stop() end)
-    --mt:start()      
- end
-end)
+--mytimer=timer{timeout=2}
+--mytimer:connect_signal("timeout",
+--    function () for i,c in ipairs(client.get(mouse.screen)) do
+--        if c:tags()[mouse.screen] == awful.tag.selected(mouse.screen) then
+--            naughty.notify({title=c.class,text=c.role})
+--            naughty.notify({title=c.class,text=c.instance})
+--        end
+--    end
+--end)
+----mytimer:start()
+----
+--client.connect_signal("focus", function(c)
+-- if  c.name == "plugin-container" then
+-- 	--msgDebug(c.name)
+--	c.fullscreen = true
+--    --flash_client = c
+--    --mt = timer({timeout=0.1})
+--    --mt:connect_signal("timeout",function() flash_client.fullscreen = true
+--    --mt:stop() end)
+--    --mt:start()      
+-- end
+--end)
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
@@ -660,7 +665,7 @@ client.connect_signal("manage", function (c, startup)
             awful.placement.no_offscreen(c)
         end
     end
-
+	
     local titlebars_enabled = false
     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         -- buttons for the titlebar
@@ -707,7 +712,41 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal("focus", 
+		function(c) 
+			c.border_color = beautiful.border_focus
+
+	-- Виджет слева от заголовка окна
+    local left_layout = wibox.layout.fixed.horizontal()
+    left_layout:add(awful.titlebar.widget.iconwidget(c))
+
+    -- Виджеты в правой части заголовка окна
+    local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(awful.titlebar.widget.floatingbutton(c))
+    right_layout:add(awful.titlebar.widget.maximizedbutton(c))
+    right_layout:add(awful.titlebar.widget.stickybutton(c))
+    right_layout:add(awful.titlebar.widget.ontopbutton(c))
+    right_layout:add(awful.titlebar.widget.closebutton(c))
+
+    -- Заголовок окна
+    local middle_layout = wibox.layout.flex.horizontal()
+    local title = awful.titlebar.widget.titlewidget(c)
+    title:set_align("center")
+    middle_layout:add(title)
+
+    -- Расставляем блоки виджетов по местам
+    local layout = wibox.layout.align.horizontal()
+    layout:set_left(left_layout)
+    layout:set_right(right_layout)
+    layout:set_middle(middle_layout)
+
+    -- Добавляем их на заголовок окна
+    awful.titlebar(c):set_widget(layout)
+    -- Задаем размер заголовка окна
+    awful.titlebar(c, {size = 15})
+--			awful.titlebar.toggle(1)
+--			msgDebug("test22")
+		end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 --

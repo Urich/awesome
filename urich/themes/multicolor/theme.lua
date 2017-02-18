@@ -12,7 +12,7 @@ theme                               = {}
 theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/urich/themes/multicolor"
 theme.wallpaper                     = theme.confdir .. "/wall.png"
 
-theme.font                          = "Terminus 8"
+theme.font                          = "Terminus 10"
 --theme.taglist_font                =
 theme.menu_bg_normal                = "#000000"
 theme.menu_bg_focus                 = "#000000"
