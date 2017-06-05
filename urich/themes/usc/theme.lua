@@ -6,7 +6,7 @@ local theme = {}
 
 theme.confdir       = os.getenv("HOME") .. "/.config/awesome/urich/themes/usc"
 theme.wallpaper     = theme.confdir .. "/../../wallpaper/404.jpg"
-theme.font          = "Terminus 10"
+theme.font          = "Terminus 9"
 
 -- theme.bg_normal     = "#222222"
 -- theme.bg_focus      = "#535d6c"

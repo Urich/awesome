@@ -53,7 +53,7 @@ beautiful.init(os.getenv("HOME") .. "/.config/awesome/urich/themes/usc/theme.lua
 -- editor = os.getenv("EDITOR") or "nano"
 -- editor_cmd = terminal .. " -e " .. editor
 
-terminal = "terminator"
+terminal = "konsole"
 editor = "gvim"
 editor_cmd = editor
 
@@ -66,12 +66,12 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
+    awful.layout.suit.fair,
     awful.layout.suit.floating,
     awful.layout.suit.tile,
 --    awful.layout.suit.tile.left,
 --    awful.layout.suit.tile.bottom,
 --    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
 --    awful.layout.suit.fair.horizontal,
 --    awful.layout.suit.spiral,
 --    awful.layout.suit.spiral.dwindle,
@@ -489,6 +489,11 @@ awful.rules.rules = {
       }, properties = { titlebars_enabled = true }
     },
 
+    { rule = { class = "digikam" },
+       properties = { screen = 1, tag = "WWW" } },
+	
+    { rule = { class = "Google-chrome" },
+       properties = { screen = 1, tag = "WWW" } },
     -- Set Firefox to always map on the tag named "2" on screen 1.
     -- { rule = { class = "Firefox" },
     --   properties = { screen = 1, tag = "2" } },
@@ -571,6 +576,15 @@ function run_once(cmd)
     findme = cmd:sub(0, firstspace-1)
   end
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+end
+
+function dpms(c)
+    if c then
+        awful.util.spawn_with_shell("xset s off")
+		awful.util.spawn_with_shell("xset -dpms")
+    else
+        awful.util.spawn_with_shell("xset s on && xset +dpms &")
+    end
 end
 
 function run_start()
