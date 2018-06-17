@@ -596,10 +596,15 @@ function run_start()
 end
 
 run_start();
+run_once("dropbox");
 run_once("conky");
+run_once("pidgin");
+run_once("skype");
+run_once("xxkb");
 run_once("clementine");
 --run_once("scim-im-agent");
 --run_once("xxkb");
 run_once("parcellite");
 run_once("xrandr -s 1920x1200");
+run_once("cbatticon");
 
