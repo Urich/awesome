@@ -54,7 +54,7 @@ beautiful.init(os.getenv("HOME") .. "/.config/awesome/urich/themes/usc/theme.lua
 -- editor_cmd = terminal .. " -e " .. editor
 
 terminal = "konsole"
-editor = "gvim"
+editor = "subl"
 editor_cmd = editor
 
 -- Default modkey.
@@ -114,7 +114,7 @@ powermenu = {
    { "Suspend", function() awful.util.spawn("sudo pm-suspend") end },
    { "Hibernate", function () awful.util.spawn("sudo pm-hibernate") end },
    { "Reload", awesome.restart },
-   { "Logout", awesome.quit }
+   { "Logout", function () awesome.quit() end }
 }
 
 mymainmenu = awful.menu({ items = { { "Awesome Help", myawesomemenu, beautiful.awesome_icon },
@@ -299,7 +299,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
-    awful.key({ modkey, "Control" }, "r", awesome.restart,
+    awful.key({ modkey, "Control" }, "r", function() awesome.restart() end,
               {description = "reload awesome", group = "awesome"}),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
@@ -320,6 +320,9 @@ globalkeys = awful.util.table.join(
               {description = "select next", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1)                end,
               {description = "select previous", group = "layout"}),
+
+--    awful.key({ modkey,           }, "q",      function () mykeyboardlayout.next_layout(); end,
+--              {description="Toggle keyboard layout", group="awesome"}),
 
     awful.key({ modkey, "Control" }, "n",
               function ()
@@ -576,6 +579,7 @@ function run_once(cmd)
     findme = cmd:sub(0, firstspace-1)
   end
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+  --awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null; or " .. cmd)
 end
 
 function dpms(c)
@@ -592,9 +596,10 @@ function run_start()
 end
 
 run_start();
-run_once("dropbox");
 run_once("conky");
-run_once("pidgin");
-run_once("skype");
-run_once("xxkb");
+run_once("clementine");
+--run_once("scim-im-agent");
+--run_once("xxkb");
+run_once("parcellite");
+run_once("xrandr -s 1920x1200");
 
